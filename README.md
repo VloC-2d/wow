@@ -1,24 +1,67 @@
+ 
+# Maqueen
 
-> Abra esta pagina en [https://vloc-2d.github.io/wow/](https://vloc-2d.github.io/wow/)
+[Maqueen is an easy-to-use programming educational Robot](https://www.dfrobot.com.cn/goods-1802.html)
 
-## Usar como extensión
+## Basic usage
 
-Este repositorio puede ser añadido como una **extensión** en MakeCode.
+* Set the direction and speed of Maqueen motor
 
-* abra [https://makecode.microbit.org/](https://makecode.microbit.org/)
-* haga clic en **New Project**
-* haga clic en **Extensiones** en el menú del engranaje
-* buscar **https://github.com/vloc-2d/wow** e importar
+```blocks
+ maqueen.motorRun(maqueen.Motors.M1, maqueen.Dir.CW, 120)
+ maqueen.motorRun(maqueen.Motors.M2, maqueen.Dir.CCW, 120)
+```
 
-## Edita este proyecto
+* Read ultrasonic sensor
 
-Para editar este repositorio en MakeCode.
+```blocks
+basic.showNumber(maqueen.Ultrasonic(PingUnit.Centimeters))
+```
 
-* abra [https://makecode.microbit.org/](https://makecode.microbit.org/)
-* haga clic en **Import** luego haga clic en **Import URL**
-* pegue **https://github.com/vloc-2d/wow** y haga clic en importar
+* Set the  Maqueen servos 
 
-#### Metadatos (utilizados para búsqueda, renderizado)
+```blocks
+maqueen.servoRun(maqueen.Servos.S1, 90)
+```
+
+* Stop the Maqueen motor 
+
+```blocks
+maqueen.motorStop(maqueen.Motors.M1)
+```
+
+* Read line tracking sensor
+
+```blocks
+serial.writeNumber(maqueen.readPatrol(maqueen.Patrol.PatrolLeft))
+```
+
+* Turn on/off the LEDs
+
+```blocks
+maqueen.writeLED(maqueen.LED.LEDLeft, maqueen.LEDswitch.turnOn)
+```
+
+* Read IR sensor value
+
+```blocks
+basic.showNumber(maqueen.IR_read())
+```
+
+* Read the version number
+
+```blocks
+basic.showString(maqueen.IR_read_version())
+```
+
+## License
+
+MIT
+
+Copyright (c) 2018, microbit/micropython Chinese community  
+
+
+## Supported targets
 
 * for PXT/microbit
-<script src="https://makecode.com/gh-pages-embed.js"></script><script>makeCodeRender("{{ site.makecode.home_url }}", "{{ site.github.owner_name }}/{{ site.github.repository_name }}");</script>
+(The metadata above is needed for package search.)
