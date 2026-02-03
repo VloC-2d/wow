@@ -133,54 +133,120 @@ namespace maqueen {
 
     //% blockId=ultrasonic_sensor block="read ultrasonic sensor in cm"
     //% weight=95
-    export function Ultrasonic(): number {
+   export function Ultrasonic(T: PIN, E: PIN): number {
+        
         let data;
         let i = 0;
-        data = readUlt(PingUnit.Centimeters);
-        if (state1 == 1 && data != 0) {
-            state1 = 0;
+        data = readUlt(T, E);
+        if(state1  == 1 && data != 0){
+            state1 =0;
         }
-        if (data != 0) {
-        } else {
-            if (state1 == 0) {
-                do {
-                    data = readUlt(PingUnit.Centimeters);
+        if(data != 0){
+        }else{
+            if(state1 == 0){
+                do{
+                    data = readUlt(T, E);
                     i++;
-                    if (i > 3) {
-                        state1 = 1;
-                        data = 500;
+                    if(i > 3){
+                        state1 =1;
+                        data =500;
                         break;
-                    }
-                } while (data == 0)
+                        }
+                }while(data == 0)
             }
         }
-        if (data == 0)
+        if(data == 0)
             data = 500
         return data;
-
     }
-    function readUlt(unit: number): number {
-        let d
-        pins.digitalWritePin(DigitalPin.P1, 1);
-        basic.pause(1)
-        pins.digitalWritePin(DigitalPin.P1, 0);
-        if (pins.digitalReadPin(DigitalPin.P2) == 0) {
-            pins.digitalWritePin(DigitalPin.P1, 0);
-            pins.digitalWritePin(DigitalPin.P1, 1);
-            basic.pause(20)
-            pins.digitalWritePin(DigitalPin.P1, 0);
-            d = pins.pulseIn(DigitalPin.P2, PulseValue.High, 500 * 58);//readPulseIn(1);
-        } else {
-            pins.digitalWritePin(DigitalPin.P1, 1);
-            pins.digitalWritePin(DigitalPin.P1, 0);
-            basic.pause(20)
-            pins.digitalWritePin(DigitalPin.P1, 0);
-            d = pins.pulseIn(DigitalPin.P2, PulseValue.Low, 500 * 58);//readPulseIn(0);
+
+    function readUlt(T:number, E:number):number{
+        let maxCmDistance = 500;
+        let _T;
+        let _E;
+        switch (T) {
+            case PIN.P0: _T = DigitalPin.P0; break;
+            case PIN.P1: _T = DigitalPin.P1; break;
+            case PIN.P2: _T = DigitalPin.P2; break;
+            case PIN.P8: _T = DigitalPin.P8; break;
+            case PIN.P12: _T = DigitalPin.P12; break;
+            // case PIN.P10: _T = DigitalPin.P10; break;
+            case PIN.P13: _T = DigitalPin.P13; break;
+            case PIN.P14: _T = DigitalPin.P14; break;
+            case PIN.P15: _T = DigitalPin.P15; break;
+            default: _T = DigitalPin.P0; break;
         }
-        let x = d / 59;
-        switch (unit) {
-            case PingUnit.Centimeters: return Math.round(x);
-            default: return Math.idiv(d, 2.54);
+
+        switch (E) {
+            case PIN.P0: _E = DigitalPin.P0; break;
+            case PIN.P1: _E = DigitalPin.P1; break;
+            case PIN.P2: _E = DigitalPin.P2; break;
+            case PIN.P8: _E = DigitalPin.P8; break;
+            //case PIN.P9: _E = DigitalPin.P9; break;
+            case PIN.P12: _E = DigitalPin.P12; break;
+            case PIN.P13: _E = DigitalPin.P13; break;
+            case PIN.P14: _E = DigitalPin.P14; break;
+            case PIN.P15: _E = DigitalPin.P15; break;
+            default: _E = DigitalPin.P0; break;
+        }
+
+        let ultraSonic_d;
+        // pins.digitalWritePin(_T, 1);
+        // basic.pause(1)
+        pins.digitalWritePin(_T, 0);
+        if (pins.digitalReadPin(_E) == 0) {
+            pins.digitalWritePin(_T, 0);
+            pins.digitalWritePin(_T, 1);
+            basic.pause(20);
+            pins.digitalWritePin(_T, 0);
+            ultraSonic_d = pins.pulseIn(_E, PulseValue.High, maxCmDistance * 58);
+        } else {
+            pins.digitalWritePin(_T, 1);
+            pins.digitalWritePin(_T, 0);
+            basic.pause(20);
+            pins.digitalWritePin(_T, 0);
+            ultraSonic_d = pins.pulseIn(_E, PulseValue.Low, maxCmDistance * 58);
+        }
+        let ultraSonic_x = ultraSonic_d / 59;
+        // if (ultraSonic_x <= 0 || ultraSonic_x > 300) {
+        //     return 0;
+        // }
+        return Math.round(ultraSonic_x);
+    }
+
+    /**
+     * Set the direction and speed of Maqueen motor.
+     * @param index Motor to run
+     * @param direction Wheel direction
+     * @param speed Wheel speed
+     */
+
+    //% weight=90
+    //% blockId=motor_MotorRun block="motor|%index|move|%Dir|at speed|%speed"
+    //% speed.min=0 speed.max=255
+    //% index.fieldEditor="gridpicker" index.fieldOptions.columns=2
+    //% direction.fieldEditor="gridpicker" direction.fieldOptions.columns=2
+    export function motorRun(index: Motors, direction: Dir, speed: number): void {
+        let buf = pins.createBuffer(3);
+        if (index == 0) {
+            buf[0] = 0x00;
+            buf[1] = direction;
+            buf[2] = speed;
+            pins.i2cWriteBuffer(0x10, buf);
+        }
+        if (index == 1) {
+            buf[0] = 0x02;
+            buf[1] = direction;
+            buf[2] = speed;
+            pins.i2cWriteBuffer(0x10, buf);
+        }
+        if (index == 2) {
+            buf[0] = 0x00;
+            buf[1] = direction;
+            buf[2] = speed;
+            pins.i2cWriteBuffer(0x10, buf);
+            buf[0] = 0x02;
+            pins.i2cWriteBuffer(0x10, buf);
         }
     }
 
