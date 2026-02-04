@@ -33,6 +33,17 @@ interface KV {
     action: Action;
 }
 
+enum PIN {
+    P0 = 3,
+    P1 = 2,
+    P2 = 1,
+    P8 = 18,
+    //P9 = 10,
+    P12 = 20,
+    P13 = 23,
+    P14 = 22,
+    P15 = 21,
+};
 
 //%
 //% weight=100 color=#008B00 icon="\uf136" block="Maqueen v4"
