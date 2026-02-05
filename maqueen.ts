@@ -144,8 +144,8 @@ namespace maqueen {
      * Read ultrasonic sensor.
      */
 
-    //% blockId=ultrasonic_sensor block="read ultrasonic sensor in cm"
-    //% weight=95
+    //% weight=20
+    //%block="read ultrasonic sensor TRIG %T ECHO %E Company:CM"
    export function Ultrasonic(T: PIN, E: PIN): number {
         
         let data;
